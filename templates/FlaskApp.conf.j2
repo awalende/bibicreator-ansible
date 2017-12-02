@@ -1,0 +1,21 @@
+<VirtualHost *:443>
+
+	SSLEngine On
+ SSLCertificateFile /etc/apache2/ssl/apache.pem
+
+
+ WSGIDaemonProcess moi user={{ ansible_user_id }} group={{ ansible_user_id }} threads=5 home={{ bibicreator_path }}/
+ WSGIScriptAlias / {{ bibicreator_path }}/moi.wsgi
+
+<Directory {{ bibicreator_path }}>
+ WSGIProcessGroup moi
+ WSGIApplicationGroup %{GLOBAL}
+  WSGIScriptReloading On
+
+
+ Require all granted
+</Directory>
+</VirtualHost>
+
+
+

@@ -1,0 +1,30 @@
+---
+# vars file for BibiCreator-Ansible
+
+bibicreator_path: "/home/{{ ansible_user_id }}/bibicreator"
+
+install_mysql: 'yes'
+install_apache2: 'yes'
+
+# config.ini in /ect/bibicreator/
+mysql_user: bibicreator
+mysql_password: password
+db_url: localhost
+
+os_auth_url: OSAUTHURL
+os_user: OPENSTACKUSER
+os_password: PASSWORD
+os_project_name: bibiserv
+os_user_domain_id: default
+os_project_domain_name: default
+os_base_img_id: 5dc6a020-cfb9-4cb3-b70e-d2967772a1c0
+
+os_flavor: BiBiGrid Debug
+os_ssh_username: ubuntu
+os_network :  b9f8e25f-98ca-4e22-9c1e-152d9aca5aa5
+os_availability_zone :  default
+
+admin_password: password
+admin_email: admin@email.de
+
+

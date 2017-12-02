@@ -1,0 +1,157 @@
+---
+# tasks file for BibiCreator-Ansible
+
+- name: Update Cache
+  apt: update_cache=yes
+  become: true
+
+
+- name: Install MySQL Python librarys
+  apt: "name=python-mysqldb state=installed"
+  become: true
+  when: install_mysql == 'yes'
+
+- name: Install MySQL Server
+  when: install_mysql == 'yes'
+  become: true
+  apt:
+    name: mysql-server
+    state: installed
+
+
+- name: Install pip
+  become: true
+  apt:
+    name: python-pip
+    state: installed
+
+- name: Install necessary python stuff
+  become: true
+  apt: name={{ item }} state=installed
+  with_items:
+    - python3
+    - python3-pip
+    - unzip
+
+
+- name: Install python open ssl
+  pip:
+    name: pyopenssl
+  
+
+
+- name: Copy git repository
+  git:
+    repo: https://github.com/awalende/BibiImageCreator.git
+    dest: "{{ bibicreator_path }}"
+
+- name: Download packer.
+  get_url:
+    url: https://releases.hashicorp.com/packer/1.1.2/packer_1.1.2_linux_amd64.zip?_ga=2.150341045.2048116518.1512220632-1111468850.1512076026
+    dest: "{{ bibicreator_path }}/packer.zip"
+
+- name: Unpack packer
+  unarchive:
+    src: "{{ bibicreator_path }}/packer.zip"
+    dest: "{{ bibicreator_path }}"
+    remote_src: yes
+
+- name: Read pip requirements.exe and install needed dependencies for BibiCreator.
+  pip:
+    requirements: "{{ bibicreator_path }}/requirements.txt"
+    executable: pip3
+
+- name: Create config directory in /etc/
+  become: true
+  file:
+    path: /etc/bibicreator
+    state: directory
+
+- name: Copy config template to /etc/bibicreator/
+  become: true
+  template:
+    src: config.ini.j2
+    dest: /etc/bibicreator/config.ini
+    owner: root
+
+
+- name: Install apache2 and mods.
+  when: install_apache2 == 'yes'
+  become: true
+  apt:  name={{ item }} state=installed
+  with_items:
+    - apache2
+    - libapache2-mod-wsgi
+
+
+- name: Create ssl directory in apache2
+  when: install_apache2 == 'yes'
+  become: true
+  file:
+    path: /etc/apache2/ssl
+    state: directory
+
+- name: Generate self signed OpenSSL certificate for Apache
+  when: install_apache2 == 'yes'
+  become: true
+  openssl_privatekey:
+    path: /etc/apache2/ssl/apache.pem
+
+- name: Copy wsgi mod from template.
+  when: install_apache2 == 'yes'
+  template:
+    src: moi.wsgi.j2
+    dest: "{{ bibicreator_path }}/moi.wsgi"
+    owner: root
+
+- name: Copy FlaskApp.conf to apache2 sites-available.
+  when: install_apache2 == 'yes'
+  become: true
+  template:
+    src: FlaskApp.conf.j2
+    dest: /etc/apache2/sites-available/FlaskApp.conf
+    owner: root
+
+- name: Enable mod_wsgi in Apache2
+  when: install_apache2 == 'yes'
+  become: true
+  apache2_module:
+    state: present
+    name: wsgi
+ 
+- name: Enable ssl in Apache2
+  when: install_apache2 == 'yes'
+  become: true
+  apache2_module:
+    state: present
+    name: ssl
+
+- name: Enable FlaskApp in Apache2
+  become: true
+  when: install_apache2 == 'yes'
+  command: a2ensite FlaskApp.conf
+  
+  
+    
+  
+  
+
+- name: Creates a new bibicreator database
+  become: true
+  when: install_mysql == 'yes'
+  mysql_db:
+    name: bibicreator
+    state: present
+
+- name: Create database user
+  when: install_mysql == 'yes'
+  become: true
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: '*.*:ALL'
+
+
+
+
+

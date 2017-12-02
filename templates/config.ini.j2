@@ -1,0 +1,30 @@
+[openstack]
+os_auth_url={{ os_auth_url }}
+os_user={{ os_user }}
+os_password={{ os_password }}
+os_project_name={{ os_project_name }}
+os_user_domain_id={{ os_user_domain_id }}
+os_project_domain_name={{ os_project_domain_name }}
+os_base_img_id={{ os_base_img_id }}
+
+os_flavor={{ os_flavor }}
+os_ssh_username={{ os_ssh_username }}
+os_network = {{ os_network }}
+os_availability_zone = {{ os_availability_zone }}
+
+
+[database]
+db_user={{ mysql_user }}
+db_password={{ mysql_password }}
+db_url={{ db_url }}/bibicreator
+
+
+[admin]
+admin_password={{ admin_password }}
+admin_email={{ admin_email }}
+
+[presets]
+
+[misc]
+packer_path={{ bibicreator_path }}/packer
+
