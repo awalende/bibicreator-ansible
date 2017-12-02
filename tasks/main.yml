@@ -135,7 +135,8 @@
   become: true
   when: install_apache2 == 'yes'
   command: a2ensite FlaskApp.conf
-  notify: restart apache2
+  notify:
+    - restart apache
   
   
 - name: Create database user
