@@ -1,7 +1,8 @@
 <VirtualHost *:443>
 
 	SSLEngine On
- SSLCertificateFile /etc/apache2/ssl/apache.pem
+ SSLCertificateFile /etc/apache2/ssl/server.crt
+ SSLCertificateKeyFile /etc/apache2/ssl/server.key
 
 
  WSGIDaemonProcess moi user={{ ansible_user_id }} group={{ ansible_user_id }} threads=5 home={{ bibicreator_path }}/

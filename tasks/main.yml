@@ -32,13 +32,16 @@
     - python3
     - python3-pip
     - unzip
+    - python3-dev
 
 
 - name: Install python open ssl
   pip:
     name: pyopenssl
   
-
+- name: obtain current user
+  shell: echo $USER
+  register: current_user
 
 - name: Copy git repository
   git:
@@ -81,7 +84,7 @@
   apt:  name={{ item }} state=installed
   with_items:
     - apache2
-    - libapache2-mod-wsgi
+    - libapache2-mod-wsgi-py3
 
 
 - name: Create ssl directory in apache2
@@ -91,11 +94,14 @@
     path: /etc/apache2/ssl
     state: directory
 
-- name: Generate self signed OpenSSL certificate for Apache
-  when: install_apache2 == 'yes'
+
+
+- name: create self-signed SSL cert
   become: true
-  openssl_privatekey:
-    path: /etc/apache2/ssl/apache.pem
+  command: openssl req -new -nodes -x509 -subj "/C=DE/ST=Bielefeld/L=NRW/O=BI/CN=${ansible_fqdn}" -days 3650 -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -extensions v3_ca creates=/etc/apache2/ssl/server.crt
+
+
+
 
 - name: Copy wsgi mod from template.
   when: install_apache2 == 'yes'
@@ -130,9 +136,8 @@
   become: true
   when: install_apache2 == 'yes'
   command: a2ensite FlaskApp.conf
-  
-  
-    
+  notify:
+    - restart apache2
   
   
 
@@ -150,6 +155,8 @@
     name: "{{ mysql_user }}"
     password: "{{ mysql_password }}"
     priv: '*.*:ALL'
+
+
 
 
 
