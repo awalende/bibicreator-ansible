@@ -108,7 +108,6 @@
   template:
     src: moi.wsgi.j2
     dest: "{{ bibicreator_path }}/moi.wsgi"
-    owner: root
 
 - name: Copy FlaskApp.conf to apache2 sites-available.
   when: install_apache2 == 'yes'
