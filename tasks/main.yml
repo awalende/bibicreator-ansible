@@ -135,10 +135,17 @@
   become: true
   when: install_apache2 == 'yes'
   command: a2ensite FlaskApp.conf
-  notify:
-    - restart apache2
+  notify: restart apache2
   
   
+- name: Create database user
+  when: install_mysql == 'yes'
+  become: true
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: '*.*:ALL'
+
 
 - name: Creates a new bibicreator database
   become: true
@@ -147,13 +154,7 @@
     name: bibicreator
     state: present
 
-- name: Create database user
-  when: install_mysql == 'yes'
-  become: true
-  mysql_user:
-    name: "{{ mysql_user }}"
-    password: "{{ mysql_password }}"
-    priv: '*.*:ALL'
+
 
 
 
