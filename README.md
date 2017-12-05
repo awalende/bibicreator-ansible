@@ -1,4 +1,4 @@
-Role Name
+BiBiCreator
 =========
 
 This Role installs the linux image creator tool BibiCreator for usage in the denBI Cloud Project (https://www.denbi.de/).
